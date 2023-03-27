@@ -300,9 +300,17 @@ can even do this:
 
    kubectl label nodes node01 color=blue
    
-5. Create a new deployment named blue with the nginx image and 3 replicas. = kubectl create deployment blue --image=nginx --replicas=3           
-6. Set Node Affinity to the deployment to place the pods on node01 only: add after pod spec under deploment:
-           affinity:
+5. Create a new deployment named blue with the nginx image and 3 replicas.
+
+    kubectl create deployment blue --image=nginx --replicas=3   
+    
+7. Set Node Affinity to the deployment to place the pods on node01 only: 
+ 
+   add after pod spec under deployment:
+   
+   <pre>
+```yaml
+   affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
@@ -311,12 +319,19 @@ can even do this:
                 operator: In
                 values:
                 - blue
+   ```
+   </pre>
+   
 7. Which nodes are the pods placed on now?: node01
 
 8. Create a new deployment named red with the nginx image and 2 replicas, and ensure it gets placed on the controlplane node only.
+
    Use the label - node-role.kubernetes.io/master - set on the controlplane node. you should create the file without actually running the deployment though by doing this command,
+   
      kubectl create deployment red --image=red --dry=run -o yaml > red.yaml
 
+<pre>
+```yaml
      affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -324,8 +339,10 @@ can even do this:
             - matchExpressions:
               - key: node-role.kubernetes.io/master
                 operator: Exists
+                
+ ```<pre>
 
-Taints and Toleration Vs Node Affinity:
+**Taints and Toleration Vs Node Affinity**:
      
 - If you have 
      - Blue, Red, Green and 2 other Nodes. 
