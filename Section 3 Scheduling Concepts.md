@@ -134,6 +134,9 @@ Tolerations: attracts the pod to the node, so enforces that pod to that node.
 
 command:
     - Kubectl taint nodes node-name key=value:taint-effect
+    
+    
+    
     - 3 types of options
         - NoSchedule = Pods not be scheduled on the node
         - PreferNoSchedule = the system will try to not schedule a pod to a node but this isn't guranteed
