@@ -214,11 +214,11 @@ spec:
   - image: nginx
     name: bee
   
-  nodeselector:
+  nodeselector:      ------------> This is now included in the Pod definition yaml, this is the label which is on the node.
     size: Large
 ```
 </pre>
- ------------------------------This is now included in the Pod definition yaml, this is the label which is on the node. 
+  
        
 - Must Label the node first. 
        - kubectl label nodes node-1 size=Large
@@ -230,6 +230,8 @@ Node Affinity:
   
 - Assigning specific pods to nodes 
 
+<pre>
+```yaml
           ---
 apiVersion: v1
 kind: Pod
@@ -250,7 +252,11 @@ spec:
               operator: In
               values: 
               - Large
+```
+</pre>
 
+<pre>
+```yaml
 can even do this:
      
           - matchExpressions:
@@ -258,6 +264,9 @@ can even do this:
               operator: NotIn
               values: 
               - Small
+      
+```
+</pre>
 
 - what is someone changes the label in the future? will the pod stay on the node? this is define by underneath the nodeaffinity section:
      Node Affinity types:
