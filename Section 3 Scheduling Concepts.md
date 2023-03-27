@@ -362,17 +362,18 @@ can even do this:
             - and using node affinity to prevent other pods being placed on the nodes. 
 
                  
-Resource Requirements and Limits:
+**Resource Requirements and Limits**:
                  
 - each node has a set of cpu, disk resources, memory.
-- whenever a pod is set on the node, it consumed the nodes resources.
+- whenever a pod is set on the node, it consumes the nodes resources.
 - kube scheduler schedules pods to nodes. 
                  - it takes into consideration the resources required and available on the nodes. 
 - for example, if the scheduler, schedules a pod on node 2, if the node has no resources the scheduler avoids on that node and does on the node with resources. 
 - if nothing is avaiable or no sufficient nodes to schedule node onto, then it will state pod as pending state.
 - CPU / MEM / DISK 
      - for example pod requires 0.5 CPU and 256 Mi CPU, this is called resource request. 
-                 
+<pre>
+```yaml                
 apiVersion: v1
 kind: Pod
 metadata:
@@ -387,6 +388,9 @@ spec:
        requests:
          memory: '1Gi"
          cpu: 1
+```
+</pre>
+
 
 - 1 count of CPU means, 0.1 = 100m, 1m = 1 vCPU, can request higher number of CPU
 - Memory 256Mi or 268 etc, 1G
@@ -399,7 +403,9 @@ spec:
 In the previous lecture, I said -
 "When a pod is created the containers are assigned a default CPU request of .5 and memory of 256Mi". 
  For the POD to pick up those defaults you must have first set those as default values for request and limit by creating a LimitRange in that namespace.  
-    
+<pre>
+```yaml
+
 apiVersion: v1
 kind: LimitRange
 metadata:
@@ -411,7 +417,8 @@ spec:
     defaultRequest:
       memory: 256Mi
     type: Container
-                 
+   
+   
 apiVersion: v1
 kind: LimitRange
 metadata:
@@ -423,20 +430,24 @@ spec:
     defaultRequest:
       cpu: 0.5
     type: Container                 
-                 
-  Editing an existing pod:
+```
+</pre>
+
+
+**Editing an existing pod**:
        
 Edit a POD
 Remember, you CANNOT edit specifications of an existing POD other than the below.
 
-spec.containers[*].image
-spec.initContainers[*].image
-spec.activeDeadlineSeconds
-spec.tolerations
+-spec.containers[*].image
+-spec.initContainers[*].image
+-spec.activeDeadlineSeconds
+-spec.tolerations
 
 For example you cannot edit the environment variables, service accounts, resource limits (all of which we will discuss later) of a running pod.
 But if you really want to, you have 2 options:
-1. Run the kubectl edit pod <pod name> command.  This will open the pod specification in an editor (vi editor). 
+1. Run the kubectl edit pod <pod name> command. 
+   This will open the pod specification in an editor (vi editor). 
 Then edit the required properties. When you try to save it, you will be denied. This is because you are attempting to edit a field on the pod that is not editable.
                  
 Scheduling, Test Resource Limits:
