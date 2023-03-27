@@ -629,7 +629,7 @@ grep static /var/lib/kubernetes/config.yaml : to check the value stored in stati
  - you copy from the kube-scueduler and then put create your customer yaml file for kube-scheduler. 
 >
 
-     <pre>
+     
 ```yaml
      
 apiVersion: v1
@@ -709,6 +709,7 @@ The final YAML file would look something like this:
 >
 <pre>
 ```yaml
+
 ---
 apiVersion: v1
 kind: Pod
@@ -792,6 +793,7 @@ Configuring Kubernetes scheduler
  
 <pre>
 ```yaml
+
 ---
 apiVersion: v1
 kind: Pod
