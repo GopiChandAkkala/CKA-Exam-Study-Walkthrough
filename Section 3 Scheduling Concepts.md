@@ -439,10 +439,10 @@ spec:
 Edit a POD
 Remember, you CANNOT edit specifications of an existing POD other than the below.
 
--spec.containers[*].image
--spec.initContainers[*].image
--spec.activeDeadlineSeconds
--spec.tolerations
+- spec.containers[*].image
+- spec.initContainers[*].image
+- spec.activeDeadlineSeconds
+- spec.tolerations
 
 For example you cannot edit the environment variables, service accounts, resource limits (all of which we will discuss later) of a running pod.
 But if you really want to, you have 2 options:
@@ -450,13 +450,16 @@ But if you really want to, you have 2 options:
    This will open the pod specification in an editor (vi editor). 
 Then edit the required properties. When you try to save it, you will be denied. This is because you are attempting to edit a field on the pod that is not editable.
                  
-Scheduling, Test Resource Limits:
+**Scheduling, Test Resource Limits**:
    
 1. A pod called rabbit is deployed. Identify the CPU requirements set on the Pod = 1 (Describe command)
 3. Another pod called elephant has been deployed in the default namespace. It fails to get to a running state. Inspect this pod and identify the Reason why it is not running.
      - What is OOM Killed (exit code 137) The OOM Killed error, also indicated by exit code 137, means that a container or pod was terminated because they used more memory than allowed. 
        OOM stands for “Out Of Memory”. Kubernetes allows pods to limit the resources their containers are allowed to utilize on the host machine.
 5.  The elephant pod runs a process that consume 15Mi of memory. Increase the limit of the elephant pod to 20Mi.
+
+<pre>
+```yaml
 
 ---
 apiVersion: v1
@@ -483,21 +486,26 @@ spec:
       requests:
         memory: 5Mi
 
+```
+</pre>
+     
 - what you can do is instead of deleting and re-creating new yaml file for elephant, you can simply re-create based on the existing pod.
      - kubectl get pods elephant -o yaml > pod.yaml
      - edit the yaml file from here 
                 
-Daemon Sets:
+**Daemon Sets**:
      
 - Daemonsets are like replicasets, help deploy multiple instances of pods however 1 on each node.
 - when a new node is added to the cluster, the daemonset is automatically assigned to the given node. 
-- when a node is removed so is that daeomonet pod. 
+- when a node is removed so is that daemonset pod. 
 - daemonset ensures copy of pod is presence on all cluster.
-- for example you want to deploty a monitoring agents and log viewer, 
-        -  dont have to worry about adding or removing daemonset will take care of it. 
+- for example you want to deploy a monitoring agents and log viewer, 
+           -  dont have to worry about adding or removing daemonset will take care of it. 
                  
-  
- apiVersion: apps/v1
+<pre>
+```yaml
+
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: fluentd-elasticsearch
@@ -542,7 +550,10 @@ spec:
       - name: varlibdockercontainers
         hostPath:
           path: /var/lib/docker/containers
-                 
+
+```
+<pre>
+
 - Daemonset scheduled pod to node using same as previous lessons, using kubescheduler/nodeaffinity. 
      
  6. Deploy a DaemonSet for FluentD Logging.    
@@ -551,21 +562,22 @@ Namespace: kube-system
 Image: k8s.gcr.io/fluentd-elasticsearch:1.20
 
 An easy way to create a DaemonSet is to first generate a YAML file for a Deployment with the command 
-kubectl create deployment elasticsearch --image=k8s.gcr.io/fluentd-elasticsearch:1.20 -n kube-system --dry-run=client -o yaml > fluentd.yaml. 
+
+- kubectl create deployment elasticsearch --image=k8s.gcr.io/fluentd-elasticsearch:1.20 -n kube-system --dry-run=client -o yaml > fluentd.yaml. 
+
 Next, remove the replicas, strategy and status fields from the YAML file using a text editor. Also, change the kind from Deployment to DaemonSet.
 
 Finally, create the Daemonset by running kubectl create -f fluentd.yaml
 
- Static Pods:
+** Static Pods**:
       
 - The Kubelet can manage a node independtly 
 - Kubelet can create pods, usually the API server sends instructions to kubelet about creating pod details. 
-- Kubelet instead can read yaml files directly on the server i.e /etc/kubernetes/manifests, place the pod defintion files on the directory, kubelets check the directory 
-  creates the pods on the hosts, if app crash, kubelet restarts the pod, recreates pod if file updated.
-- called static pods. 
+- Kubelet instead can read yaml files directly on the server i.e /etc/kubernetes/manifests, place the pod defintion files on the directory, kubelets check the directory, creates the pods on the hosts, if app crash, kubelet restarts the pod, recreates pod if file updated.
+- These pods are called static pods. 
 - Directory called --config=kubeconfig.yaml \\ (path called staticPodPath)
 - can check static pods by running docker ps command. 
-- but what if you do have a cluster/api server etc, can you still create both kind of pods same time = yes it can, kubelet can create pods from api server and can also create 
+- but what if you do have a cluster/api server etc, can you still create both kind of pods same time?  Yes it can, kubelet can create pods from api server and can also create 
   static pods from kubelet.  
 - kubelet can take request from different inputs, pod definition file from static pods folder and second is from http endpoint.   
 - the API Server is still aware of kubectl get pods commands will tell you static pods, when a kubelet creates a static pod mirror object in the api server. 
@@ -574,6 +586,20 @@ Finally, create the Daemonset by running kubectl create -f fluentd.yaml
 - static pods:
      - created by kubelet
      - deploy control plane components as static pods 
+     
+- Remember you can only create PODs this way.
+
+- You cannot create replicasets or deployments or services by placing a definition file in the designated directory.
+
+- The kubelet can create both kinds of PODs – the staticpods and the ones from the api server - at the same time.
+
+- staticPOD's are created with their node names suffixed to their pod name and these are viewed using kubectl get pods
+
+**Commands**:
+
+ps -ef | grep kubelet : to check the --config paramater where the directory is configured to store the staticPOD's
+
+grep static /var/lib/kubernetes/config.yaml : to check the value stored in staticPODdirectory
        
      
  1. How many static pods exist in this cluster in all namespaces? 2  (they have node name next to pod)
