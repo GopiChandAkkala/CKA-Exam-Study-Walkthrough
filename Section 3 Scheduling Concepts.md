@@ -903,6 +903,7 @@ apiVersion: rbac.authorization.k8s.io/v1
     kind: ClusterRole
     name: cluster-administrator
     apiGroup: rbac.authorisation.k8s.io
+    
 ```
 
 - Can also create cluster role for namespace so whatever is in the namespace, that is what the user has access too. 
@@ -948,10 +949,10 @@ roleRef:
 8. michelle's responsibilities are growing and now she will be responsible for storage as well. 
    Create the required ClusterRoles and ClusterRoleBindings to allow her access to Storage.
    Get the API groups and resource names from command kubectl api-resources. Use the given spec
-   = 
+   
 9. michelle's responsibilities are growing and now she will be responsible for storage as well. Create the required ClusterRoles and ClusterRoleBindings to allow her access to Storage.
    Get the API groups and resource names from command kubectl api-resources. Use the given spec:
-   = 
+   
 
 ```yaml
 
