@@ -906,9 +906,9 @@ apiVersion: rbac.authorization.k8s.io/v1
     apiGroup: rbac.authorisation.k8s.io    
 ```
 
-- Can also create cluster role for namespace so whatever is in the namespace, that is what the user has access too. 
+Can also create cluster role for namespace so whatever is in the namespace, that is what the user has access too. 
 
- Practice test: test-cluster-roles
+ Practice test: test-cluster-roles:
  1. For the first few questions of this lab, you would have to inspect the existing ClusterRoles and ClusterRoleBindings that have been created in this cluster.
     = kubectl get clusterrole
  2. How many ClusterRoles do you see defined in the cluster? = 69
