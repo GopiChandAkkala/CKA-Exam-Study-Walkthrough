@@ -118,7 +118,7 @@ kubectl get pods --selector app=myapp  : list all the pods with label app=myapp
 kubectl label pod pod-name key=value : to add a label to the pod
 
 
-Taints and Tolerations:
+**Taints and Tolerations:**
   
 are used to set restrictions on what pods can be sceduled on nodes. 
      
@@ -136,8 +136,8 @@ command:
     - Kubectl taint nodes node-name key=value:taint-effect
     - 3 types of options
         - NoSchedule = Pods not be scheduled on the node
-        - PreferNoSchedule = the system will try to not schedule a pod to a node but this isnt guranteed
-        - NoExecute = new pods will not be scheduled on the node and existing pods will be evivted if they do not tolerate the taint, - 
+        - PreferNoSchedule = the system will try to not schedule a pod to a node but this isn't guranteed
+        - NoExecute = new pods will not be scheduled on the node and existing pods will be evicted if they do not tolerate the taint, - 
           may have been scheduled before taint was applied on the node.  
     - Example configuration:
            - kubectl taint nodes node1 app=blue:NoSchedule 
@@ -154,7 +154,7 @@ spec:
   -  image: nginx
      name: nginx
 
-toleration
+tolerations:
 - key: "app"
   operator: "Equal"
   value: "blue"
