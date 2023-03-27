@@ -858,7 +858,7 @@ spec:
     name: nginx
       
  ```
- </pre>
+ 
      
 **Cluster roles**:
  
