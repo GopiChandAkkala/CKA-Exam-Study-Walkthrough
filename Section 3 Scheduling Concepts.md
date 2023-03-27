@@ -503,7 +503,7 @@ spec:
 - for example you want to deploy a monitoring agents and log viewer, 
            -  dont have to worry about adding or removing daemonset will take care of it. 
                  
-<pre>
+  <pre>
 ```yaml
 
 apiVersion: apps/v1
@@ -570,7 +570,7 @@ Next, remove the replicas, strategy and status fields from the YAML file using a
 
 Finally, create the Daemonset by running kubectl create -f fluentd.yaml
 
-** Static Pods**:
+**Static Pods**:
       
 - The Kubelet can manage a node independtly 
 - Kubelet can create pods, usually the API server sends instructions to kubelet about creating pod details. 
@@ -602,6 +602,8 @@ ps -ef | grep kubelet : to check the --config paramater where the directory is c
 
 grep static /var/lib/kubernetes/config.yaml : to check the value stored in staticPODdirectory
        
+ 
+ Practice Questions:
      
  1. How many static pods exist in this cluster in all namespaces? 2  (they have node name next to pod)
  2. Which of the below components is NOT deployed as a static pod? CoreDNS (Cause you can still have all these compononents listed) 
@@ -617,7 +619,7 @@ grep static /var/lib/kubernetes/config.yaml : to check the value stored in stati
         kubectl run --restart=Never --image=busybox static-busybox --dry-run=client -o yaml --command -- sleep 1000 > /etc/kubernetes/manifests/static-busybox.yaml
       
       
- Multiple Scheduler:
+** Multiple Scheduler**:
     
  - can customise the sheduler and dictate how and when it schedule for example schedule a pod to a specific scheduler. 
  - can have multiple scheduler at the same time
@@ -625,7 +627,11 @@ grep static /var/lib/kubernetes/config.yaml : to check the value stored in stati
    it allows you to elect which kubeschuler on node will be active on 1 time. 
  - to get multiple kube scheduler working must set leader elect option to false 
  - you copy from the kube-scueduler and then put create your customer yaml file for kube-scheduler. 
-      
+>
+
+     <pre>
+```yaml
+     
 apiVersion: v1
 kind: Pod
 metadata:
@@ -672,7 +678,11 @@ spec:
     name: nginx
   schedulerName: my-custom-scheduler
 
+```
+</pre>
+     
 - How to tell which kube-scheduler picked up the pod allocation, this can be done by simply doing:
+
      - kubectl get events, will list all the events - success etc
       
 3. Deploy an additional scheduler to the cluster following the given specification.
@@ -680,18 +690,25 @@ spec:
      
 1. copy kube-scheduler.yaml from the directory /etc/kubernetes/manifests/ to any other location and then change the name to my-scheduler.
    Add or update the following command arguments in the YAML file:     
+<pre>
+```yaml
 - --leader-elect=false
 - --port=10282
 - --scheduler-name=my-scheduler
 - --secure-port=0
+```
+</pre>
 
-Here, we are setting leader-elect to false for our new custom scheduler called my-scheduler.
-We are also making use of a different port 10282 which is not currently in use in the controlplane.
-The default scheduler uses secure-port on port 10259 to serve HTTPS with authentication and authorization. This is not needed for our custom scheduler, so we can disable HTTPS by setting the value of secure-port to 0.
+- Here, we are setting leader-elect to false for our new custom scheduler called my-scheduler.
+- We are also making use of a different port 10282 which is not currently in use in the controlplane.
+- The default scheduler uses secure-port on port 10259 to serve HTTPS with authentication and authorization. This is not needed for our custom scheduler, so we can disable HTTPS by setting the value of secure-port to 0.
 
 Finally, because we have set secure-port to 0, replace HTTPS with HTTP and use the correct ports under liveness and startup probes.
 The final YAML file would look something like this:
 
+>
+<pre>
+```yaml
 ---
 apiVersion: v1
 kind: Pod
@@ -752,7 +769,9 @@ spec:
     name: kubeconfig
 status: {}      
       
-
+```
+</pre>
+     
 Final challenge:
  
 Configuring Kubernetes scheduler
@@ -770,7 +789,9 @@ Configuring Kubernetes scheduler
 
 5. Deploy an additional scheduler to the cluster following the given specification.
    Use the manifest file provided at /root/my-scheduler.yaml. Use the same image as used by the default kubernetes scheduler.
-      
+ 
+<pre>
+```yaml
 ---
 apiVersion: v1
 kind: Pod
@@ -812,11 +833,17 @@ spec:
     - name: config-volume
       configMap:
         name: my-scheduler-config     
-      
+
+```
+</pre>
+     
 6. A POD definition file is given. Use it to create a POD with the new custom scheduler.
    File is located at /root/nginx-pod.yaml    
       
 ---
+<pre>
+```yaml
+
 apiVersion: v1 
 kind: Pod 
 metadata:
@@ -827,7 +854,10 @@ spec:
   - image: nginx
     name: nginx
       
-Cluster roles:
+ ```
+ </pre>
+     
+**Cluster roles**:
  
 - Roles and Role binding are Namespaced meaning they are created within Namespace
 - Cluster scope = nodes / pvc / clusteroles / clusterrolebindings / certificatesigningrequests / namespaces
