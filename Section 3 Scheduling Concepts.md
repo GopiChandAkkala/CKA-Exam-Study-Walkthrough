@@ -891,6 +891,7 @@ apiVersion: rbac.authorization.k8s.io/v1
   cluster-admin-role-binding.yaml
   
   ```yaml
+  
   apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBindinding
   metadata: 
