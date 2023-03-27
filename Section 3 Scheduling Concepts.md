@@ -857,7 +857,7 @@ spec:
   - image: nginx
     name: nginx
       
- ```
+ 
  
      
 **Cluster roles**:
