@@ -236,7 +236,7 @@ spec:
      - This is where nodeaffinity comes in. 
 
 
-Node Affinity:
+**Node Affinity**:
   
 - Assigning specific pods to nodes 
 
@@ -404,6 +404,7 @@ In the previous lecture, I said -
 "When a pod is created the containers are assigned a default CPU request of .5 and memory of 256Mi". 
  For the POD to pick up those defaults you must have first set those as default values for request and limit by creating a LimitRange in that namespace.  
 <pre>
+
 ```yaml
 
 apiVersion: v1
@@ -552,7 +553,7 @@ spec:
           path: /var/lib/docker/containers
 
 ```
-<pre>
+</pre>
 
 - Daemonset scheduled pod to node using same as previous lessons, using kubescheduler/nodeaffinity. 
      
