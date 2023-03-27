@@ -110,6 +110,12 @@ spec:
          image: nginx 
 
 
+**Commands**:
+
+kubectl get pods --show-labels : list all pods along with their labels
+kubectl get pods --selector app=myapp  : list all the pods with label app=myapp
+
+kubectl label pod pod-name key=value : to add a label to the pod
 
 
 Taints and Tolerations:
