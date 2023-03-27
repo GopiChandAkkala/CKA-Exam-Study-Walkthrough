@@ -204,17 +204,19 @@ NodeSelector:
 - to prevent the above from happening you can set limitations on the pods so they only run on particular nodes. 
 
           ---
-apiVersion: v1
-kind: Pod
-metadata:
-  name: bee
-spec:
-  containers:
-  - image: nginx
-    name: bee
-  
-  nodeselector:
-    size: Large ------------------------------This is now included in the Pod definition yaml, this is the label which is on the node. 
+| Key                 | Value     |
+|---------------------|-----------|
+| apiVersion          | v1        |
+| kind                | Pod       |
+| metadata            |           |
+| &nbsp;&nbsp;name    | bee       |
+| spec                |           |
+| &nbsp;&nbsp;containers  |           |
+| &nbsp;&nbsp;&nbsp;&nbsp;image | nginx     |
+| &nbsp;&nbsp;&nbsp;&nbsp;name  | bee       |
+| &nbsp;&nbsp;nodeselector|           |
+| &nbsp;&nbsp;&nbsp;&nbsp;size  | Large     |
+ ------------------------------This is now included in the Pod definition yaml, this is the label which is on the node. 
        
 - Must Label the node first. 
        - kubectl label nodes node-1 size=Large
