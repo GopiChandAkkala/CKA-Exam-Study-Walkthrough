@@ -903,8 +903,7 @@ apiVersion: rbac.authorization.k8s.io/v1
   roleRef:
     kind: ClusterRole
     name: cluster-administrator
-    apiGroup: rbac.authorisation.k8s.io
-    
+    apiGroup: rbac.authorisation.k8s.io    
 ```
 
 - Can also create cluster role for namespace so whatever is in the namespace, that is what the user has access too. 
@@ -919,7 +918,8 @@ apiVersion: rbac.authorization.k8s.io/v1
  6. What level of permission does the cluster-admin role grant? = perform any action on the resource
  7. A new user michelle joined the team. She will be focusing on the nodes in the cluster. 
     Create the required ClusterRoles and ClusterRoleBindings so she gets access to the nodes.
----
+    
+
 ```yaml
 
 kind: ClusterRole
