@@ -53,6 +53,9 @@ Labels and Selectors:
 - Need to be aware that there are 2 sections with labels
      - the top part where it specifies the label, is the label of the replicaset, the labels under the template section is the labels of the pods. 
 
+<pre>
+```yaml
+
   apiVersion: v1 
   kind: ReplicationSet
   metadata: 
@@ -73,6 +76,9 @@ Labels and Selectors:
     containers:
     - name: nginx-containers
       image: nginx
+      
+```
+</pre>
 
 - In order the replicaset to the pod, we configure the selector field to match the labels defined on the pod. so the matchlabels label need to match the label on the metadata. 
 - Annotation can be used to describe or provide information 
@@ -90,6 +96,8 @@ Use selectors to filter the output = kubectl get pods --selector env=dev
 5. A ReplicaSet definition file is given replicaset-definition-1.yaml. Try to create the replicaset. There is an issue with the file. Try to fix it.
 Need to set the pod label to frontend
 
+<pre>
+```yaml
 ---
 apiVersion: apps/v1
 kind: ReplicaSet
@@ -109,6 +117,8 @@ spec:
        - name: nginx
          image: nginx 
 
+```
+</pre>
 
 **Commands**:
 
@@ -268,8 +278,11 @@ can even do this:
 ```
 </pre>
 
-- what is someone changes the label in the future? will the pod stay on the node? this is define by underneath the nodeaffinity section:
+- what if someone changes the label in the future? will the pod stay on the node? 
+ This is define by underneath the nodeaffinity section:
+ 
      Node Affinity types:
+     
        - requiredDuringSchedulingIgnoredDuringExecution: ------- Scheduling pod to node is mandated, the ignore during execution part states that even if labels are removed
                                                                  it does not matter, the pod will still be scheduled on this node until it removed. 
      
