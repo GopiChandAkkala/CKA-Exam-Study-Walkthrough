@@ -306,8 +306,7 @@ can even do this:
     
 7. Set Node Affinity to the deployment to place the pods on node01 only: 
  
-   add after pod spec under deployment:
-   
+   add after pod spec under deployment:   
    <pre>
 ```yaml
    affinity:
@@ -340,7 +339,8 @@ can even do this:
               - key: node-role.kubernetes.io/master
                 operator: Exists
                 
- ```<pre>
+ ```
+ </pre>
 
 
 **Taints and Toleration Vs Node Affinity**:
