@@ -330,7 +330,7 @@ can even do this:
    
      kubectl create deployment red --image=red --dry=run -o yaml > red.yaml
 
-<pre>
+    <pre>
 ```yaml
      affinity:
         nodeAffinity:
@@ -341,6 +341,7 @@ can even do this:
                 operator: Exists
                 
  ```<pre>
+
 
 **Taints and Toleration Vs Node Affinity**:
      
