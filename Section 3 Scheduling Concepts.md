@@ -843,7 +843,8 @@ spec:
    File is located at /root/nginx-pod.yaml    
       
 ---
-<pre>
+>
+
 ```yaml
 
 apiVersion: v1 
