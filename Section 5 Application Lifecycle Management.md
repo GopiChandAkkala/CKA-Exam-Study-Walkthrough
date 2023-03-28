@@ -38,21 +38,21 @@ spec:
         - containerPort: 80
 ```
 
-- when a new deplyment is created to create say 5 replicas it first creates 5 replicas creating 5 pods 
+- when a new deployment is created to create say 5 replicas it first creates 5 replicas creating 5 pods 
   - k8s deploymenmt object creates new replicaset under the hood and starts creating the containers there. 
   - at the same time starts taking down the old pods 1 by 1 upon rolling update. 
   - when you upgrade your application and realise something isnt right i.e something is wrong with new version of build for example ---
     you can roll back your update and rollback to previous revision destroying new pods and bringing old ones back. 
     
-   commands:
+   **commands**:
     
-   create ---------- kubectl create -f deployment-definition.yml
-   get    ---------- kubectl get deployments
-   update ---------- Kubectl apply -f deployment-definition.yml
-                     kubectl set image deployment/my-app-deployment nginx=nginx:1.9.1
-   status ---------- kubectl rollout status deployment/myapp-deployment
-                     kubectl rollout history deployment/myapp-deployment
-   rollback -------- kubectl rollout undo deployment/myapp-deploy
+  - create ---------- kubectl create -f deployment-definition.yml
+  - get    ---------- kubectl get deployments
+  - update ---------- Kubectl apply -f deployment-definition.yml
+    -                 kubectl set image deployment/my-app-deployment nginx=nginx:1.9.1
+  - status ---------- kubectl rollout status deployment/myapp-deployment
+    -                   kubectl rollout history deployment/myapp-deployment
+  - rollback -------- kubectl rollout undo deployment/myapp-deploy
  
 - Container only run if process runs, if the process stops so does the container. 
   
@@ -72,7 +72,9 @@ Practice test - Rolling updates and Rollbacks:
 
 8. Let us try that. Upgrade the application by setting the image on the deployment to kodekloud/webapp-color:v2
    Do not delete and re-create the deployment. Only set the new image name for the existing deployment.
-  
+
+```yaml
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -107,7 +109,9 @@ spec:
       - image: kodekloud/webapp-color:v2 <<<<<-------------------------------------------------Here needs to be updated
         imagePullPolicy: IfNotPresent
         name: simple-webapp
- 
+
+```
+
 10. Up to how many PODs can be down for upgrade at a time
     Consider the current strategy settings and number of PODs - 4 
   strategy:
@@ -124,11 +128,13 @@ spec:
 12. Upgrade the application by setting the image on the deployment to kodekloud/webapp-color:v3
     Do not delete and re-create the deployment. Only set the new image name for the existing deployment.
     = Run the command: kubectl edit deployment frontend and modify the required field
-  
-Commands and arguments:
+ 
+**Commands and arguments**:
       
 docker run --name ubuntu-sleeper ubuntu-sleeper
 docker run --name ubuntu-sleeper ubuntu-sleeper 10 
+
+```yaml
 
 FROM Ubuntu
 ENTRYPOINT ["sleep"] (This relates to Command)
@@ -144,6 +150,7 @@ spec:
         image: ubuntu-sleeper
         command:["sleep2.0"]
         args: ["10"]
+```
 
 Practice test commands and arguments:
   
@@ -152,6 +159,7 @@ Practice test commands and arguments:
 3. Create a pod with the ubuntu image to run a container to sleep for 5000 seconds. Modify the file ubuntu-sleeper-2.yaml.
    Note: Only make the necessary changes. Do not modify the name. = kubectl run ubuntu-sleeper-2 --image=ubuntu --dry-run=client -o yaml > ubuntu-sleeper-2.yaml
 
+```yaml
 ---
 apiVersion: v1 
 kind: Pod 
@@ -164,9 +172,12 @@ spec:
     command: <<<<<<<<<<------------------------------These commands below
       - "sleep"
       - "5000"
+```
 
 4. Create a pod using the file named ubuntu-sleeper-3.yaml. There is something wrong with it. Try to fix it!
    Note: Only make the necessary changes. Do not modify the name.
+
+```yaml
 
 apiVersion: v1
 kind: Pod 
@@ -179,7 +190,7 @@ spec:
     command:
       - "sleep"
       - "1200" <<<<<<-------- This was without approphe
-  
+```  
   
 5. Update pod ubuntu-sleeper-3 to sleep for 2000 seconds.
    Note: Only make the necessary changes. Do not modify the name of the pod. Delete and recreate the pod if necessary.  
@@ -201,6 +212,7 @@ spec:
 
 10. Create a pod with the given specifications. By default it displays a blue background. Set the given command line arguments to change it to green
 
+```yaml
 ---
 apiVersion: v1 
 kind: Pod 
@@ -213,13 +225,15 @@ spec:
   - name: simple-webapp
     image: kodekloud/webapp-color
     args: ["--color", "green"]
+```
 
-
-Enviroment variable in applications:
+**Enviroment variable in applications**:
   
 To set up an enviroment variable. set up a env property (array)
 
 ---
+```yaml
+
 apiVersion: v1 
 kind: Pod 
 metadata:
@@ -235,10 +249,12 @@ spec:
       - name: APP_COLOR
         value: Pink
 
+```
 (There are other ways in setting up enviroment variables such as config maps and secrets etc).
   
-ConfigMap:
+**ConfigMap**:
 
+```yaml
 ---
 apiVersion: v1 
 kind: Pod 
@@ -255,9 +271,12 @@ spec:
       - name: APP_COLOR
         valueFrom:
             configMapKeyRef:
-          
-Secrets: 
-          
+```
+
+**Secrets**: 
+
+```yaml
+
 ---
 apiVersion: v1 
 kind: Pod 
@@ -274,28 +293,32 @@ spec:
       - name: APP_COLOR
         valueFrom:
            secretKeyRef:
-          
-ConfigMaps:
+```
+
+**ConfigMaps**:
   
 1. If  you have a lot of pod definition files, it will become difficult to manage data.
 2. ConfigMaps are used to pass configuration data in a form of key value pair. 
 3. When a pod is created inject the configMap into the pod so the key value pairs are available as enviroment variables 
    for the application hosted in the enviroment. 
 4. Can be configured imperative or declarative 
-      - kubectl create configmap
+      - kubectl create configmap 
       - app-config --from-literal=APP_COLOR-blue \
       - app-config --from-file=app_config.properties
 
-Declarative:
-      
+**Declarative**:
+
+```yaml
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: game-demo
-data:
-  # property-like keys; each key maps to a simple value
-  player_initial_lives: "3"
-  ui_properties_file_name: "user-interface.properties"
+data:  
+  [key1]: [value1]
+	[key2]: [value2]
+  
+```
 
 followed by kubectl create -f .....yaml
      
@@ -306,6 +329,9 @@ followed by kubectl create -f .....yaml
    below is a simple pod yaml which runs an application:
   
 ---
+
+```yaml
+
 apiVersion: v1 
 kind: Pod 
 metadata:
@@ -319,6 +345,7 @@ spec:
     envFrom: 
       - configMapRef:
            name: app-config <<<-----------This is a new propert called 'envFrom' property, specify and inject configmap from one created earlier before. 
+```
 
 7. There are other ways in injecting configuration data into pod above is using config maps however other ways are, single enviroment variable or injecting as a file volume. 
 
@@ -363,7 +390,7 @@ metadata:
 
 10. Update the environment variable on the POD to use the newly created ConfigMap
     Note: Delete and recreate the POD. Only make the necessary changes. Do not modify the name of the Pod.
-      
+```yaml      
     ---
 apiVersion: v1
 kind: Pod
@@ -379,19 +406,19 @@ spec:
          name: webapp-config-map
     image: kodekloud/webapp-color
     name: webapp-color
+```    
     
-    
-Secrets:
+**Secrets**:
   
 Configuring secrets in applications:
  
 - configmap stores data in clear format
 - instead store these in secrets, secrets stored are encoded and in hash 
 - 2 ways of creating secrets, declaritive or imperetitve. 
-        Imperetive: 
+        **Imperetive**: 
       - kubectl create secret generic <secret name> --from-literal=<key>=<value>
         kubectl create -f 
-        Declarative:
+        **Declarative**:
       - Once you create the file below, need  to convert the secret to an encoded format, using linix commands:
           - echo -n 'mysq'. | base64 
               - once you recieve the values then paste the code into the value
@@ -404,7 +431,7 @@ Configuring secrets in applications:
                     name: xxxxxxxx
     
 
- 
+```yaml 
 apiVersion: v1
 kind: Secret
 metadata:
@@ -413,7 +440,7 @@ data:
   DB_HOST: mysql
   DB_USER: root
   DB_PASSWORD:passwrd
-
+```
 
 Practice test: Secrets:
   
@@ -435,6 +462,7 @@ Practice test: Secrets:
    Delete and recreate the pod if required.
    = kubectl replace --force -f /tmp/kubectl-edit-1857774077.yaml
    ---
+```yaml
 apiVersion: v1 
 kind: Pod 
 metadata:
@@ -450,27 +478,28 @@ spec:
     envFrom:  <<<<<---------------------Add these lines below
     - secretRef:
         name: db-secret
-     
+ ```    
      
 8. 
 9. 
 10. 
 
 
-Kubernetes multi-container pods:
+**Kubernetes multi-container pods**:
   
 - Having 2 services working together such as log agent and web server. 
 - multi container pods share the same networking / storage 
 
 To create a multi-container pod, add this below:
-  
+                                           
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
   name: yellow
 spec:
   containers:
-  - name: lemon <<<---------------------This is classified as an. array to allow to add multiple other containers seen below i.e. gold
+  - name: lemon <<<---------------------This is classified as an array to allow to add multiple other containers seen below i.e. gold
     image: busybox
     command:
       - sleep
@@ -478,16 +507,16 @@ spec:
 
   - name: gold
     image: redis
-  
+```  
 
 multi-container Practice test:
   
 1. Identify the number of containers created in the red pod = kubectl describe pod red 
    red 3/3 Running
 2. Identify the name of the containers running in the blue pod = teal and navy
-3. Create a multi-container pod with 2 containers. Use the spec given below.
+3.Create a multi-container pod with 2 containers. Use the spec given below.
    If the pod goes into the crashloopbackoff then add the command sleep 1000 in the lemon container.
-   = 
+```yaml 
 apiVersion: v1
 kind: Pod
 metadata:
@@ -502,6 +531,7 @@ spec:
 
   - name: gold
     image: redis
+ ```
 4. We have deployed an application logging stack in the elastic-stack namespace. Inspect it.
    Before proceeding with the next set of questions, please wait for all the pods in the elastic-stack namespace to be ready.
    This can take a few minutes.
@@ -539,16 +569,16 @@ spec:
     volumeMounts:
     - mountPath: /var/log/event-simulator/
       name: log-volume
+```
 
-
-Multi-container PODs Design Patterns:
+**Multi-container PODs Design Patterns**:
   
 There are 3 common patterns, when it comes to designing multi-container PODs. 
 1. The first and what we just saw with the logging service example is known as a side car pattern. 
 2. The others are the adapter and the ambassador pattern.
 
 
-InitContainers
+**InitContainers**:
 
 In a multi-container pod, each container is expected to run a process that stays alive as long as the POD's lifecycle. 
 For example in the multi-container pod that we talked about earlier that has a web application and logging agent, -
@@ -574,6 +604,7 @@ Practice test:  Init containers:
 7. How long after the creation of the POD will the application come up and be available to users? = 30. min                                                             
 8. Update the pod red to use an initContainer that uses the busybox image and sleeps for 20 seconds = 
 ---
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -593,6 +624,7 @@ spec:
     command: 
       - "sleep"
       - "20"
+  ```
 9. A new application orange is deployed. There is something wrong with it. Identify and fix the issue.
    Once fixed, wait for the application to run before checking solution.
    = sleep was incorrectly spelt under InitContainer
@@ -605,7 +637,7 @@ Then, delete the old pod by running kubectl delete pod orange
 Finally, create the pod again by running kubectl create -f /root/orange.yaml                                                               
                                                                   
                                                                 
-Self Healing Applications:
+**Self Healing Applications**:
                                                                   
 Kubernetes supports self-healing applications through ReplicaSets and Replication Controllers.                              
 The replication controller helps in ensuring that a POD is re-created automatically when the application within the POD crashes. 
