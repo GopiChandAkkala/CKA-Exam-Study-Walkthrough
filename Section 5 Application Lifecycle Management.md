@@ -556,7 +556,7 @@ spec:
    Existing Container Name: app
    Existing Container Image: kodekloud/event-simulator
 
-	```yaml
+```yaml
    spec:
   containers:
   - name: app
