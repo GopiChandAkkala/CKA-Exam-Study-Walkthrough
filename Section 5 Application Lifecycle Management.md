@@ -12,7 +12,9 @@ Rolling updates and Rollbacks:
       not best practice. 
   
     - second strategy and preffered, is to not destroy the application at once, take down older version and bring up new version 1 by 1. 
-      
+  
+```yaml 
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
