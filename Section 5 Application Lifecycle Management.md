@@ -36,6 +36,7 @@ spec:
         image: nginx:1.14.2
         ports:
         - containerPort: 80
+```
 
 - when a new deplyment is created to create say 5 replicas it first creates 5 replicas creating 5 pods 
   - k8s deploymenmt object creates new replicaset under the hood and starts creating the containers there. 
