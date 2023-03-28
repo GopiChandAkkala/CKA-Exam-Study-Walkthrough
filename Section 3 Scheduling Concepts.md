@@ -890,6 +890,9 @@ apiVersion: rbac.authorization.k8s.io/v1
      
   cluster-admin-role-binding.yaml
   
+  
+  <pre>
+  
   ```yaml
   
   apiVersion: rbac.authorization.k8s.io/v1
@@ -903,8 +906,10 @@ apiVersion: rbac.authorization.k8s.io/v1
   roleRef:
     kind: ClusterRole
     name: cluster-administrator
-    apiGroup: rbac.authorisation.k8s.io    
+    apiGroup: rbac.authorisation.k8s.io   
+    
 ```
+</pre>
 
 Can also create cluster role for namespace so whatever is in the namespace, that is what the user has access too. 
 
