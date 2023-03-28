@@ -81,7 +81,7 @@ Cluster Process:
 - if deployed from scratch, manually upgrade each components. 
 - upgrading 2 concepts:
   - upgrade master nodes
-  - than worker nodes
+  - then worker nodes
 - whilst master nodes are being upgraded, control plane components such as API Server, sheduler and controller manager go down briefly. 
 - master being down doesnt mean worker nodes are affected, all work loads continue serving request, during this time you cannot deploy new appications or -
   delete or configure existing ones.
@@ -138,8 +138,8 @@ Practice test: Cluster Upgrade
    and finally the kubelet. Practice referring to the kubernetes documentation page. 
    Note: While upgrading kubelet, if you hit dependency issue while running the apt-get upgrade kubelet command, 
    use the apt install kubelet=1.20.0-00 command instead
-   = 
-   On the controlplane node, run the command run the following commands:
+   
+On the controlplane node, run the command run the following commands:
 
 apt update
 This will update the package lists from the software repository.
@@ -186,7 +186,7 @@ Type exit or enter CTL + d to go back to the controlplane node.
     = kubectl uncordon node01
 
 
-Backup and Restore Method:
+**Backup and Restore Method**:
 
 - All config stored on ETCD
 - Better approach in backing up is querying the kube api server saving all resources created in a cluster.
@@ -215,7 +215,7 @@ Practice test: Backup and restore methods:
 6. The master node in our cluster is planned for a regular maintenance reboot tonight. While we do not anticipate anything to go wrong, we are required to take the necessary backups. 
    Take a snapshot of the ETCD database using the built-in snapshot functionality.
    Store the backup file at location /opt/snapshot-pre-boot.db
-   = 
+   ```yaml
    root@controlplane:~# ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 \
    --cacert=/etc/kubernetes/pki/etcd/ca.crt \
    --cert=/etc/kubernetes/pki/etcd/server.crt \
@@ -223,6 +223,7 @@ Practice test: Backup and restore methods:
    snapshot save /opt/snapshot-pre-boot.db
    Snapshot saved at /opt/snapshot-pre-boot.db
    root@controlplane:~# 
+   ```
 7. 
 8. Wake up! We have a conference call! After the reboot the master nodes came back online, but none of our applications are accessible. 
    Check the status of the applications on the cluster. What's wrong? 
@@ -230,24 +231,26 @@ Practice test: Backup and restore methods:
 9. Luckily we took a backup. Restore the original state of the cluster using the backup file. = 
 =
 First Restore the snapshot:
-
+```yaml
 root@controlplane:~# ETCDCTL_API=3 etcdctl  --data-dir /var/lib/etcd-from-backup \
 snapshot restore /opt/snapshot-pre-boot.db
 
 2022-03-25 09:19:27.175043 I | mvcc: restore compact to 2552
 2022-03-25 09:19:27.266709 I | etcdserver/membership: added member 8e9e05c52164694d [http://localhost:2380] to cluster cdf818194e3a8c32
-root@controlplane:~# 
+
+```
 Note: In this case, we are restoring the snapshot to a different directory but in the same server where we took the backup (the controlplane node) As a result, the only required option for the restore command is the --data-dir.
 
 
 Next, update the /etc/kubernetes/manifests/etcd.yaml:
 We have now restored the etcd snapshot to a new path on the controlplane - /var/lib/etcd-from-backup, so, the only change to be made in the YAML file, is to change the hostPath for the volume called etcd-data from old directory (/var/lib/etcd) to the new directory (/var/lib/etcd-from-backup).
-
+```yaml
   volumes:
   - hostPath:
       path: /var/lib/etcd-from-backup
       type: DirectoryOrCreate
     name: etcd-data
+```
 With this change, /var/lib/etcd on the container points to /var/lib/etcd-from-backup on the controlplane (which is what we want)
 When this file is updated, the ETCD pod is automatically re-created as this is a static pod placed under the /etc/kubernetes/manifests directory.
 Note 1: As the ETCD pod has changed it will automatically restart, and also kube-controller-manager and kube-scheduler. Wait 1-2 to mins for this pods to restart. You can run a watch "docker ps | grep etcd" command to see when the ETCD pod is restarted.
