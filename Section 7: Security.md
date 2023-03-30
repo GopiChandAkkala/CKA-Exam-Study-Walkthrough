@@ -27,10 +27,10 @@ What can they do
   Authentication:
   
   Access to K8s cluster:
-  Admin - Users
-  Developers - Users
-  End users
-  Bots - Service accounts since this is 3rd party
+  - Admin - Users
+  - Developers - Users
+  - End users
+  - Bots - Service accounts since this is 3rd party
   
   - k8s does not manage users account nativlely 
   - cannot create users on clusters
@@ -47,7 +47,7 @@ What can they do
     - certificates
     - identity services
   
- Article on Setting up Basic Authentication
+Article on Setting up Basic Authentication
 Setup basic authentication on Kubernetes (Deprecated in 1.19)
 Note: This is not recommended in a production environment. This is only for learning purposes. Also note that this approach is deprecated in Kubernetes version 1.19 and is no longer available in later releases
 
@@ -55,18 +55,19 @@ Follow the below instructions to configure basic authentication in a kubeadm set
 
 Create a file with user details locally at /tmp/users/user-details.csv
 
+```yaml
 # User File Contents
 password123,user1,u0001
 password123,user2,u0002
 password123,user3,u0003
 password123,user4,u0004
 password123,user5,u0005
-
+```
 
 Edit the kube-apiserver static pod configured by kubeadm to pass in the user details. The file is located at /etc/kubernetes/manifests/kube-apiserver.yaml
 
 
-
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -88,12 +89,12 @@ spec:
       path: /tmp/users
       type: DirectoryOrCreate
     name: usr-details
-
+```
 
 Modify the kube-apiserver startup options to include the basic-auth file
 
 
-
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -107,11 +108,13 @@ spec:
     - --authorization-mode=Node,RBAC
       <content-hidden>
     - --basic-auth-file=/tmp/users/user-details.csv
+ ```   
+    
 Create the necessary roles and role bindings for these users:
 
 
 
----
+```yaml
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -121,9 +124,10 @@ rules:
 - apiGroups: [""] # "" indicates the core API group
   resources: ["pods"]
   verbs: ["get", "watch", "list"]
- 
+``` 
 ---
-# This role binding allows "jane" to read pods in the "default" namespace.
+This role binding allows "jane" to read pods in the "default" namespace.
+```yaml
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -137,16 +141,18 @@ roleRef:
   kind: Role #this must be Role or ClusterRole
   name: pod-reader # this must match the name of the Role or ClusterRole you wish to bind to
   apiGroup: rbac.authorization.k8s.io
+```  
+  
 Once created, you may authenticate into the kube-api server using the users credentials
 
-curl -v -k https://localhost:6443/api/v1/pods -u "user1:password123"
+- curl -v -k https://localhost:6443/api/v1/pods -u "user1:password123"
   
- TLS Introduction:
- TLS Certificates PRE-REQ:
+** TLS Introduction**:
+**TLS Certificates PRE-REQ**:
  
  - User access web server, comminication between user and server is encrypted this is TLS
  - Encrypt data using encrption keys, data is sent to server from client, cause this is encrypted
-   it cannot be deencrypted by attacker however the key can since it is symmatric key and not assemtric
+   it cannot be decrypted by attacker however the key can since it is symmatric key and not assemtric
    since the client sends the key to the server. Same key to encrypt and decrypt 
    
  - Assmmetric, different keys to encrypt and dencrypt
@@ -201,7 +207,7 @@ curl -v -k https://localhost:6443/api/v1/pods -u "user1:password123"
        who they are
   
     
-   Security Kubernetes with TLS:
+   **Security Kubernetes with TLS**:
     
    - Previously we saw a CA, have their own public and private key-pairs to sign server certificates
      this is called a 'root certificate' 
@@ -249,7 +255,7 @@ curl -v -k https://localhost:6443/api/v1/pods -u "user1:password123"
      - API-Server Speaking to ETCD = Client Cert and key 
      - API-SERVER & ETCD Acting as Server 
      
-   Certification creation:
+   **Certification creation**:
    
    Many ways in generating certificates for kubernetes cluster
    - Tools such as 
@@ -459,11 +465,11 @@ curl -v -k https://localhost:6443/api/v1/pods -u "user1:password123"
   9. Let's get rid of it. Delete the new CSR object
      kubectl delete csr agent-smith
   
- Kube-Config:
+** Kube-Config:**
  
  - moving certificate config file to KubeConfig file
    kubectl get pods 
-      --kubeconfig config
+      --kubectl config
    
  - kubeconfig file is in a specific format
  - 3 sections 
@@ -506,7 +512,7 @@ curl -v -k https://localhost:6443/api/v1/pods -u "user1:password123"
        = The path to certificate is incorrect in the kubeconfig file. Correct the certificate name which is available at /etc/kubernetes/pki/users/.
        cert should be dev-user not developer-user. 
    
-API Groups:
+**API Groups**:
 
 - To access API: Can do this: 
   Curl https://kube-master:6443/version = To see version
@@ -547,7 +553,7 @@ API Groups:
  - kube proxy = enables connectivity between pods and services across different nodes in cluster
  - kubectl proxy = http proxy services created by kubectl to access kube-api server. 
  
- Authorization:
+ **Authorization**:
  
  - Depending who is accessing what, needs to restrict users i.e with namespaces etc
  - Authorization Mechanisms:
@@ -585,7 +591,7 @@ Can Delete PODS
 Can Create ConfigMaps
 
 1. 
-
+```yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -597,11 +603,11 @@ rules:
 - apiGroups: [""]
   resources: ["ConfigMap"]
   verbs: ["create"]
-  
+```  
 kubectl create -f xxxxx-role.yaml
 
 2. Next step is do perform 'role binding' links user objects to a role
-
+```yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -614,7 +620,7 @@ roleRef:  <<<<<-------------------------- Ths is where you tie user role above t
   kind: Role
   name: developer
   apiGroup: rbac.authorization.k8s.io
-  
+```  
 3. View role
 - kubectl get roles
 - kubectl get rolebindings 
@@ -627,10 +633,11 @@ roleRef:  <<<<<-------------------------- Ths is where you tie user role above t
 - kubectl auth can-i create pods --as dev-user
 - kubectl auth can-i create deployments --as dev-user
 
-Reasource name access: 
+**Reasource name access**: 
 
 - if you want to grant user access to only certain pods in namespace for example:
 
+```yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -640,7 +647,8 @@ rules:
   resources: ["pods"]
   verbs: ["list", "get', "create", "update", "delete"]
   resourceNames: ["blue", "orange"]
-
+```
+  
 Practice test: Test roles 
 
 1. Inspect the environment and identify the authorization modes configured on the cluster.
@@ -671,6 +679,7 @@ OR
 
 Solution manifest file to create a role and rolebinding in the default namespace:
 
+  ```yaml
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -694,7 +703,7 @@ roleRef:
   kind: Role
   name: developer
   apiGroup: rbac.authorization.k8s.io
-     
+ ```    
 10. A set of new roles and role-bindings are created in the blue namespace for the dev-user. However, the dev-user is unable to get details of the dark-blue-app pod in the blue namespace. Investigate and fix the issue.
     We have created the required roles and rolebindings, but something seems to be wrong.
     = kubectl edit role developer -n blue
@@ -702,7 +711,8 @@ roleRef:
 11. Add a new rule in the existing role developer to grant the dev-user permissions to create deployments in the blue namespace.
     Remember to add api group "apps".
     = kubectl edit role developer -n blue
-    apiVersion: rbac.authorization.k8s.io/v1
+```yaml    
+apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: developer
@@ -728,8 +738,9 @@ rules:
   - watch
   - create
   - delete
-
-Service accounts:
+```
+  
+**Service accounts:**
 
 - User accounts used by Humans, service accounts used by machines 
 - user account could be admin using admin account to access the cluster
@@ -777,8 +788,9 @@ Service accounts:
      = kubectl describe serviceaccounts dashboard-sa 
  13. You shouldn't have to copy and paste the token each time. The Dashboard application is programmed to read token from the secret mount location. However currently, the default service account is mounted. Update the deployment to use the newly created ServiceAccount
      Edit the deployment to change ServiceAccount from default to dashboard-sa
-     = 
-     apiVersion: apps/v1
+
+```yaml 
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: web-dashboard
@@ -806,10 +818,11 @@ spec:
         name: web-dashboard
         ports:
         - containerPort: 8080
-          protocol: TCP           
+          protocol: TCP  
+  ```
  14. 
      
-Image Security:
+**Image Security:**
 - Pod manifest file with 'nginx image' container.
 - name is 'nginx'
 - follow docker image convention, image is repository name it is actually -
@@ -889,8 +902,8 @@ Security context quiz:
    = root
 2. Edit the pod ubuntu-sleeper to run the sleep process with user ID 1010.
    Note: Only make the necessary changes. Do not modify the name or image of the pod.
-   = 
-   ---
+
+  ```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -905,6 +918,8 @@ spec:
     - "4800"
     image: ubuntu
     name: ubuntu-sleeper
+  ```
+  
 3. A Pod definition file named multi-pod.yaml is given. With what user are the processes in the web container started?
    The pod is created with multiple containers and security contexts defined at the Pod and Container level.
    = 1002
@@ -932,11 +947,12 @@ spec:
     name: ubuntu-sleeper
     securityContext:
       capabilities:
-        add: ["SYS_TIME"] <<<<< change system time, this is usually for root of the host onlu 
+        add: ["SYS_TIME"] <<<<< change system time, this is usually for root of the host only
+  
 6. Now update the pod to also make use of the NET_ADMIN capability.
    Note: Only make the necessary changes. Do not modify the name of the pod.
    = 
-   apiVersion: v1
+apiVersion: v1
 kind: Pod
 metadata:
   name: ubuntu-sleeper
@@ -970,6 +986,8 @@ Network Policies:
        role: db
   labels:
     role: db
+  
+ ```yaml 
 - policyTypes:
   - Ingress
   ingress
@@ -980,7 +998,8 @@ Network Policies:
     ports:
     - protocol: TCP
       port: 3306
-- 
+```
+```yaml 
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata: 
@@ -999,10 +1018,11 @@ spec:
     ports: 
     - protocol: TCP
       port: 3306
-
+```
+  
 Developing network policies:
 
-- 
+```yaml
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata: 
@@ -1026,9 +1046,11 @@ spec:
     ports: 
     - protocol: TCP
       port: 3306
-      
+  
+  ```
 - stateful by default
-
+```yaml
+  
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata: 
@@ -1055,7 +1077,8 @@ spec:
     ports: 
     - protocol: TCP
       port: 80
-
+```
+  
 Network Policy Quiz:
 
 1. How many network policies do you see in the environment?
@@ -1086,7 +1109,8 @@ We have deployed few web applications, services and network policies. Inspect th
    
 10. Create a network policy to allow traffic from the Internal application only to the payroll-service and db-service.
 Use the spec given below. You might want to enable ingress traffic to the pod to test your rules in the UI.
-= 
+
+  ```yaml
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -1125,3 +1149,4 @@ spec:
       protocol: TCP
       
  Note: We have also allowed Egress traffic to TCP and UDP port. This has been added to ensure that the internal DNS resolution works from the internal pod. Remember: The kube-dns service is exposed on port 53:
+```
