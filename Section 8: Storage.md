@@ -108,6 +108,7 @@ Persistent Volumes:
   from it, as required. 
 - a PVC, is a cluster wide pool of storage configured by admin, used by users deploying application on the clusters.
 
+```yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -119,7 +120,8 @@ spec:
      - storage: 1GI
   hostPath:
     path: /tmp/data
-    
+```
+
 - kubectl get persistentvolume
   
 Persistence Volume Claims:
@@ -130,18 +132,19 @@ Persistence Volume Claims:
 - if there are multiple matches for a volume, you can use labels and selectors to bind to correct volume.
 - if no Volumes avaiable, the PVC will remain in a pending state. 
 
+```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
    name: myclaim
 spec:
   accessModes:
-     - ReadWriteOnce
-     
+     - ReadWriteOnce     
   resources:
      request:
        storage: 500Mi
-       
+ ```
+ 
 - when the PVC is created, k8s looks at the previous PV created, if the 
   accessModules match 
   
